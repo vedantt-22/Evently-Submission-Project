@@ -1,0 +1,146 @@
+{
+  "info": {
+    "name": "Evently — Event Management & Ticketing API",
+    "description": "Complete Postman collection for the Evently REST API. Covers Auth, Events, Tiers, Bookings, and all 13 analytical report queries.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token",   "value": "",                      "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth","register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}" }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const r = pm.response.json();", "if (r.token) { pm.collectionVariables.set('token', r.token); pm.test('Token saved', () => pm.expect(r.token).to.be.a('string')); }"], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth","login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"alice@evently.com\",\n  \"password\": \"password123\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "List All Events",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/events", "host": ["{{baseUrl}}"], "path": ["events"] } }
+        },
+        {
+          "name": "Get Event by ID",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/events/1", "host": ["{{baseUrl}}"], "path": ["events","1"] } }
+        },
+        {
+          "name": "Create Event",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/events", "host": ["{{baseUrl}}"], "path": ["events"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Node.js Workshop 2026\",\n  \"description\": \"Hands-on Node.js and TypeScript workshop.\",\n  \"venueName\": \"Tech Hub Auditorium\",\n  \"city\": \"Mumbai\",\n  \"startDate\": \"2026-05-15T09:00:00\",\n  \"endDate\": \"2026-05-15T17:00:00\",\n  \"status\": \"draft\"\n}" }
+          }
+        },
+        {
+          "name": "Update Event",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/events/1", "host": ["{{baseUrl}}"], "path": ["events","1"] },
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"published\"\n}" }
+          }
+        },
+        {
+          "name": "Cancel Event",
+          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/events/1", "host": ["{{baseUrl}}"], "path": ["events","1"] } }
+        }
+      ]
+    },
+    {
+      "name": "Tiers",
+      "item": [
+        {
+          "name": "Add Ticket Tier",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/events/1/tiers", "host": ["{{baseUrl}}"], "path": ["events","1","tiers"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Early Bird\",\n  \"price\": 499,\n  \"totalCapacity\": 100\n}" }
+          }
+        },
+        {
+          "name": "Update Ticket Tier",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/events/1/tiers/1", "host": ["{{baseUrl}}"], "path": ["events","1","tiers","1"] },
+            "body": { "mode": "raw", "raw": "{\n  \"price\": 549,\n  \"totalCapacity\": 120\n}" }
+          }
+        },
+        {
+          "name": "Remove Ticket Tier",
+          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/events/1/tiers/1", "host": ["{{baseUrl}}"], "path": ["events","1","tiers","1"] } }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/bookings", "host": ["{{baseUrl}}"], "path": ["bookings"] },
+            "body": { "mode": "raw", "raw": "{\n  \"eventId\": 1,\n  \"tierId\": 1,\n  \"quantity\": 2\n}" }
+          }
+        },
+        {
+          "name": "Get My Bookings",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/bookings", "host": ["{{baseUrl}}"], "path": ["bookings"] } }
+        },
+        {
+          "name": "Cancel Booking",
+          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/bookings/1", "host": ["{{baseUrl}}"], "path": ["bookings","1"] } }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        { "name": "Revenue Summary (filter by date)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/revenue-summary?from=2025-01-01&to=2025-12-31", "host": ["{{baseUrl}}"], "path": ["reports","revenue-summary"], "query": [{"key":"from","value":"2025-01-01"},{"key":"to","value":"2025-12-31"}] } } },
+        { "name": "Attendance by City", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/attendance-by-city?year=2025", "host": ["{{baseUrl}}"], "path": ["reports","attendance-by-city"], "query": [{"key":"year","value":"2025"}] } } },
+        { "name": "Top Selling Events", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/top-events?limit=5", "host": ["{{baseUrl}}"], "path": ["reports","top-events"], "query": [{"key":"limit","value":"5"}] } } },
+        { "name": "Available Events (with seats)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/available-events", "host": ["{{baseUrl}}"], "path": ["reports","available-events"] } } },
+        { "name": "Q1 — Total Revenue in January 2025", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q1-revenue-by-month?year=2025&month=1", "host": ["{{baseUrl}}"], "path": ["reports","q1-revenue-by-month"], "query": [{"key":"year","value":"2025"},{"key":"month","value":"1"}] } } },
+        { "name": "Q2 — Top City in Q1 2025", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q2-top-city-by-quarter?year=2025&quarter=1", "host": ["{{baseUrl}}"], "path": ["reports","q2-top-city-by-quarter"], "query": [{"key":"year","value":"2025"},{"key":"quarter","value":"1"}] } } },
+        { "name": "Q3 — Top 3 Best-Selling Events All Time", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q3-top-events?limit=3", "host": ["{{baseUrl}}"], "path": ["reports","q3-top-events"], "query": [{"key":"limit","value":"3"}] } } },
+        { "name": "Q4 — Revenue % per Tier for Tech Summit 2025", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q4-tier-breakdown?eventTitle=Tech Summit 2025", "host": ["{{baseUrl}}"], "path": ["reports","q4-tier-breakdown"], "query": [{"key":"eventTitle","value":"Tech Summit 2025"}] } } },
+        { "name": "Q5 — Events With Fewer Than 10 Seats Remaining", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q5-low-seat-events?threshold=10", "host": ["{{baseUrl}}"], "path": ["reports","q5-low-seat-events"], "query": [{"key":"threshold","value":"10"}] } } },
+        { "name": "Q6 — Average Ticket Price by City (Published Events)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q6-avg-price-by-city", "host": ["{{baseUrl}}"], "path": ["reports","q6-avg-price-by-city"] } } },
+        { "name": "Q7 — Unique Attendees for Organiser ID 1", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q7-unique-attendees?organizerId=1", "host": ["{{baseUrl}}"], "path": ["reports","q7-unique-attendees"], "query": [{"key":"organizerId","value":"1"}] } } },
+        { "name": "Q8 — Cancelled Bookings + Lost Revenue per Event", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q8-cancelled-revenue", "host": ["{{baseUrl}}"], "path": ["reports","q8-cancelled-revenue"] } } },
+        { "name": "Q9 — Top Revenue Tier Type Across All Events", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q9-top-tier-type", "host": ["{{baseUrl}}"], "path": ["reports","q9-top-tier-type"] } } },
+        { "name": "Q10 — Published Events With Zero Bookings", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q10-zero-booking-events", "host": ["{{baseUrl}}"], "path": ["reports","q10-zero-booking-events"] } } },
+        { "name": "Q11 — Month-over-Month Revenue Trend 2025", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q11-monthly-trend?year=2025", "host": ["{{baseUrl}}"], "path": ["reports","q11-monthly-trend"], "query": [{"key":"year","value":"2025"}] } } },
+        { "name": "Q12 — Top Spender (User With Most Total Spend)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q12-top-spender", "host": ["{{baseUrl}}"], "path": ["reports","q12-top-spender"] } } },
+        { "name": "Q13 — Seat Fill Rate for Events in Next 30 Days", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/reports/q13-upcoming-fill-rate", "host": ["{{baseUrl}}"], "path": ["reports","q13-upcoming-fill-rate"] } } }
+      ]
+    }
+  ]
+}
